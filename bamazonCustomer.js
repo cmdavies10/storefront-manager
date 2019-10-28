@@ -20,11 +20,11 @@ function buyProduct() {
         for (var i = 0; i < response.length; i++) {
             console.log(
                 "---" +
-                "\nItem ID: " + response.item_id +
-                "\nProduct Name: " + response.product_name +
-                "\nDepartment Name: " + response.department_name +
-                "\nPrice: " + response.price +
-                "\nStock Quantity: " + response.stock_quantity
+                "\nItem ID: " + response[i].item_id +
+                "\nProduct Name: " + response[i].product_name +
+                "\nDepartment Name: " + response[i].department_name +
+                "\nPrice: " + response[i].price +
+                "\nStock Quantity: " + response[i].stock_quantity
             )
         }
         console.log(response);
@@ -38,7 +38,7 @@ function buyProduct() {
                     }
                     return choiceArray;
                 },
-                message: "Choose the [item ID] of the product you would like to purchase: "
+                message: "Choose the item ID of the product you would like to purchase: "
             },
             {
                 name: "quantity",
@@ -68,8 +68,22 @@ function buyProduct() {
             if (answer.quantity > chosenProduct.stock_quantity) {
                 console.log("Error: Insufficient Quantity")
             } else if (answer.quantity <= chosenProduct.stock_quantity) {
-                console.log("Product Purchased Successfully and Inventory Updated")
-                console.log("Total Purchase Price: $" + chosenProduct.price * answer.quantity);
+
+                connection.query(
+                    "UPDATE products SET ? WHERE ?", [{
+                            stock_quantity: chosenProduct.stock_quantity - answer.quantity
+                        },
+                        {
+                            item_id: answer.choice
+                        }
+                    ],
+                    function(error) {
+                        if (error) throw error;
+                        console.log("---")
+                        console.log("Product Purchased Successfully and Inventory Updated")
+                        console.log("Total Purchase Price: $" + chosenProduct.price * answer.quantity);
+                    }
+                )
             } else {
                 console.log("ERROR")
             }
