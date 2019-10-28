@@ -11,5 +11,65 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
     if (err) throw err;
-    console.log(connection);
+    // console.log(connection);
 });
+
+function buyProduct() {
+    connection.query("SELECT * FROM products", function(err, response) {
+        if (err) throw err;
+        for (var i = 0; i < response.length; i++) {
+            console.log(
+                "---" +
+                "\nItem ID: " + response.item_id +
+                "\nProduct Name: " + response.product_name +
+                "\nDepartment Name: " + response.department_name +
+                "\nPrice: " + response.price +
+                "\nStock Quantity: " + response.stock_quantity
+            )
+        }
+        console.log(response);
+        inquirer.prompt([{
+                name: "choice",
+                type: "rawlist",
+                choices: function() {
+                    var choiceArray = [];
+                    for (var i = 0; i < response.length; i++) {
+                        choiceArray.push(response[i].item_id);
+                    }
+                    return choiceArray;
+                },
+                message: "Choose the [item ID] of the product you would like to purchase: "
+            },
+            {
+                name: "quantity",
+                type: "input",
+                message: "Enter the quantity you would like to purchase: ",
+                validate: function(value) {
+                    if (isNaN(value) === false) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        ]).then(function(answer) {
+            var chosenProduct;
+            for (var i = 0; i < response.length; i++) {
+                if (response[i].item_id === answer.choice) {
+                    chosenProduct = response[i];
+                }
+            }
+            console.log(chosenProduct);
+            console.log(chosenProduct.stock_quantity);
+            if (answer.choice > chosenProduct.stock_quantity) {
+                console.log("Error: Insufficient Quantity")
+            } else if (answer.choice <= chosenProduct.stock_quantity) {
+                console.log("Product Purchased Successfully and Inventory Updated")
+            } else {
+                console.log("ERROR")
+            }
+        });
+    });
+};
+
+buyProduct();
