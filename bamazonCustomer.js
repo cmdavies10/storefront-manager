@@ -61,10 +61,15 @@ function buyProduct() {
             }
             console.log(chosenProduct);
             console.log(chosenProduct.stock_quantity);
-            if (answer.choice > chosenProduct.stock_quantity) {
+            console.log("price ---")
+            console.log(chosenProduct.price);
+            console.log("quantity ---");
+            console.log(answer.quantity);
+            if (answer.quantity > chosenProduct.stock_quantity) {
                 console.log("Error: Insufficient Quantity")
-            } else if (answer.choice <= chosenProduct.stock_quantity) {
+            } else if (answer.quantity <= chosenProduct.stock_quantity) {
                 console.log("Product Purchased Successfully and Inventory Updated")
+                console.log("Total Purchase Price: $" + chosenProduct.price * answer.quantity);
             } else {
                 console.log("ERROR")
             }
