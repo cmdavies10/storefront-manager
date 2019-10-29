@@ -70,26 +70,25 @@ function viewProducts() {
     });
 };
 
-// function viewLowInventory() {
-//     var query = "SELECT * FROM products WHERE ?";
-//     connection.query(query, [{
-//             stock_quantity:
-//         }],
-//         function(err, res) {
-//             if (err) throw err;
-//             for (var i = 0; i < res.length; i++) {
-//                 console.log(
-//                     "--- Low Inventory ---" +
-//                     "\nItem ID: " + res[i].item_id +
-//                     "\nProduct Name: " + res[i].product_name +
-//                     "\nDepartment Name: " + res[i].department_name +
-//                     "\nPrice: " + res[i].price +
-//                     "\nStock Quantity: " + res[i].stock_quantity
-//                 )
-//             }
-//         })
-//     runApp();
-// }
+function viewLowInventory() {
+    var query = "SELECT * FROM products WHERE stock_quantity < 5";
+    connection.query(query,
+        function(err, res) {
+            if (err) throw err;
+            for (var i = 0; i < res.length; i++) {
+                console.log(
+                    "--- Low Inventory ---" +
+                    "\nItem ID: " + res[i].item_id +
+                    "\nProduct Name: " + res[i].product_name +
+                    "\nDepartment Name: " + res[i].department_name +
+                    "\nPrice: " + res[i].price +
+                    "\nStock Quantity: " + res[i].stock_quantity
+                )
+            }
+            runApp();
+        })
+
+}
 
 function addInventory() {
     connection.query("SELECT * FROM products", function(err, response) {
@@ -119,26 +118,28 @@ function addInventory() {
                 message: "How much inventory would you like to add?"
             }
         ]).then(function(answer) {
-            var chosenProduct;
-            for (var i = 0; i < response.length; i++) {
-                if (response[i].product_name === answer.product) {
-                    chosenProduct = response[i];
-                }
-            };
-            console.log(response[i].stock_quantity);
-            console.log(answer.product);
-            console.log(chosenProduct);
-
-            connection.query("UPDATE products SET ? WHERE ?", [{
-                    stock_quantity: response[i].stock_quantity + answer.inventory
-                },
-                {
-                    product_name: answer.product
-                }
-            ], function(error) {
-                if (error) throw error;
-                console.log("Product Inventory Updated Successfully");
-                runApp();
+            // console.log(answer);
+            connection.query("SELECT * FROM products", function(err, res) {
+                if (err) throw err;
+                var chosenProduct;
+                for (var i = 0; i < res.length; i++) {
+                    if (res[i].product_name === answer.product) {
+                        chosenProduct = res[i];
+                    }
+                };
+                connection.query("UPDATE products SET ? WHERE ?", [{
+                            stock_quantity: parseInt(chosenProduct.stock_quantity) + parseInt(answer.inventory)
+                        },
+                        {
+                            product_name: answer.product
+                        }
+                    ],
+                    function(error) {
+                        if (err) throw err;
+                        console.log("Product inventory updated successfully");
+                        runApp();
+                    }
+                )
             });
         });
     });
@@ -195,5 +196,3 @@ function addProduct() {
         )
     });
 }
-
-// connection end function
