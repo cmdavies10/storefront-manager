@@ -27,7 +27,6 @@ function buyProduct() {
                 "\nStock Quantity: " + response[i].stock_quantity
             )
         }
-        console.log(response);
         inquirer.prompt([{
                 name: "choice",
                 type: "rawlist",
@@ -59,19 +58,14 @@ function buyProduct() {
                     chosenProduct = response[i];
                 }
             }
-            console.log(chosenProduct);
-            console.log(chosenProduct.stock_quantity);
-            console.log("price ---")
-            console.log(chosenProduct.price);
-            console.log("quantity ---");
-            console.log(answer.quantity);
             if (answer.quantity > chosenProduct.stock_quantity) {
-                console.log("Error: Insufficient Quantity")
+                console.log("Error: Insufficient Quantity");
+                connection.end();
             } else if (answer.quantity <= chosenProduct.stock_quantity) {
 
                 connection.query(
                     "UPDATE products SET ? WHERE ?", [{
-                            stock_quantity: chosenProduct.stock_quantity - answer.quantity
+                            stock_quantity: parseInt(chosenProduct.stock_quantity) - parseInt(answer.quantity)
                         },
                         {
                             item_id: answer.choice
@@ -82,6 +76,7 @@ function buyProduct() {
                         console.log("---")
                         console.log("Product Purchased Successfully and Inventory Updated")
                         console.log("Total Purchase Price: $" + chosenProduct.price * answer.quantity);
+                        connection.end();
                     }
                 )
             } else {
