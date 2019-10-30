@@ -3,7 +3,7 @@
 ## OVERVIEW
 Storefront Manager is a command line interface application that utilizes Node and MySQL to
 allow users to interact with data using a mock online store. Two separate CLI
-applications mimic the user interface from both customer and a manager viewpoints.
+applications mimic the user interface from both customer and manager viewpoints.
 The structure and initial content for the database used in both applications can
 be found within the `bamazon.sql` and `seeds.sql` files.
 
